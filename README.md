@@ -1,8 +1,8 @@
-<meta charset="utf-8">
+<meta charset="euc-kr">
 
 # yotniri
 
-##### ��ũ�ٿ� ���� �׽�Ʈ
+##### ¸¶Å©´Ù¿î ¹®¼­ Å×½ºÆ®
 
 # COPYRIGHT
 Copyright 2019. ICT Team oo. All rights reserved.
