@@ -12,14 +12,14 @@ def initGame():
     # 실질적인 화면 세팅
     pygame.init()
     windows = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32); 
-    pygame.display.set_caption('소프트웨어공학 팀프로젝트 - 윷놀이')          
+    pygame.display.set_caption('소프트웨어 공학 팀프로젝트 - 윷놀이')          
     pygame.display.set_icon(pygame.image.load('images/icons/icon.png'))      
     # FPS Object
     fps_clock = pygame.time.Clock()
 
     # Scene 호출
-    IntroScene()
-    #GameScene()
+    num_of_player, num_of_mal = IntroScene()
+    GameScene(num_of_player, num_of_mal)
 
 def IntroScene():
     # 인트로 페이지 설정 (BG Music, Image)
@@ -121,6 +121,7 @@ def IntroScene():
                     # 시작 버튼
                     elif 495 < mouse_x and mouse_x < 650 and 344 < mouse_y and mouse_y < 404:
                         clickSound.play()
+                        intro = False
                 
                     if mouse_clicked and dlg:
                         windows.blit(set_dialog, (220, 100))
@@ -141,12 +142,29 @@ def IntroScene():
                         clickSound.play()
                         mouse_clicked = False
 
-
-        
         # 화면 업데이트 주기 30 FPS
         pygame.display.update()
         fps_clock.tick(30)
 
+    return num_of_player, num_of_mal
+
+def GameScene(num_of_player, num_of_mal):
+    # 게임 페이지 설정 (BG Music, Image)
+    pygame.mixer.music.load('sounds/GameBGM.mp3')
+    time.sleep(1)
+    pygame.mixer.music.play(-1)
+
+    # 플래그 변수
+    game = True
+    game_bg = pygame.image.load('images/game/GameScene.png')
+
+    while game:
+        windows.blit(game_bg, (0,0))
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
 
 # 게임 실행
 initGame()
