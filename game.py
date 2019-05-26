@@ -1,170 +1,202 @@
-# coding=euc-kr
-# Import
-import pygame, sys, time
+ï»¿import pygame, sys, time
 from mouse import *
 from constants import *
 from pygame.locals import *
 
-# È­¸é ÃÊ±âÈ­
+# ì´ˆê¸° í™”ë©´ì„ êµ¬ì„±í•˜ëŠ” ë©”ì†Œë“œ
+# ë‚´ë¶€ì—ì„œ Intro, Game Scene í˜¸ì¶œ
 def initGame():
-    global windows, fps_clock
+    global windows, fpsClock
 
-    # ½ÇÁúÀûÀÎ È­¸é ¼¼ÆÃ
+    # Window Initialize...
     pygame.init()
     windows = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 32); 
-    pygame.display.set_caption('¼ÒÇÁÆ®¿ş¾î °øÇĞ ÆÀÇÁ·ÎÁ§Æ® - À·³îÀÌ')          
+    pygame.display.set_caption('ì†Œí”„íŠ¸ì›¨ì–´ ê³µí•™ íŒ€í”„ë¡œì íŠ¸ - ìœ·ë†€ì´')          
     pygame.display.set_icon(pygame.image.load('images/icons/icon.png'))      
-    # FPS Object
-    fps_clock = pygame.time.Clock()
+    
+    # FPSë¥¼ ê´€ë¦¬í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
+    fpsClock = pygame.time.Clock()
 
-    # Scene È£Ãâ
-    num_of_player, num_of_mal = IntroScene()
-    GameScene(num_of_player, num_of_mal)
+    # Scene í˜¸ì¶œ
+    while True:
+        numOfPlayer, numOfHorse = IntroScene()
+        GameScene(numOfPlayer, numOfHorse)
+                   
 
+# ì‹œì‘ í™”ë©´ì„ êµ¬ì„±í•˜ëŠ” ë©”ì†Œë“œ
 def IntroScene():
-    # ÀÎÆ®·Î ÆäÀÌÁö ¼³Á¤ (BG Music, Image)
-    pygame.mixer.music.load('sounds/IntroBGM.mp3')
+    # ì¸íŠ¸ë¡œ í˜ì´ì§€ ì„¤ì •
+    pygame.mixer.music.load('sounds/bgm_intro.mp3')
     pygame.mixer.music.play(-1)
 
-    clickSound = pygame.mixer.Sound('sounds/Click.wav')
+    soundClick = pygame.mixer.Sound('sounds/click.wav')
 
-    # ÀÌ¹ÌÁö ·»´õ¸µ
-    intro_bg = pygame.image.load('images/intro/IntroScene.png')
-    start_btn = pygame.image.load('images/intro/IntroStartBtn.png')
-    start_btn_clicked = pygame.image.load('images/intro/IntroStartBtn_Clicked.png')
-    set_dialog = pygame.image.load('images/intro/SettingDlg.png')
-    set_cursor = pygame.image.load('images/intro/SetCursor.png')
-    windows.blit(intro_bg, (0, 0))
-    windows.blit(start_btn, (130, 260))
+    # ì‹œì‘ í™”ë©´ ì´ë¯¸ì§€ ë Œë”ë§
+    spriteIntroBg = pygame.image.load('images/intro/bg_intro.png')
+    spriteStartBtn = pygame.image.load('images/intro/sprite_button_start.png')
+    spriteStartBtnOn = pygame.image.load('images/intro/sprite_button_start_on.png')
+    spriteSetDialog = pygame.image.load('images/intro/dlg_settings.png')
+    spriteSelectCursor = pygame.image.load('images/intro/sprite_selection.png')
+    windows.blit(spriteIntroBg, (0, 0))
+    windows.blit(spriteStartBtn, (130, 260))
     
-    # Flag º¯¼ö
-    intro = True
-    music = True
-    dlg = False
-    mouse_clicked = False
+    # Flag ë³€ìˆ˜
+    intro = True                # ì´ë²¤íŠ¸ ë£¨í”„ íƒˆì¶œ
+    music = True                # BGM On / Off 
+    dlg = False                 # ë‹¤ì´ì–¼ë¡œê·¸ 
+    mouseClicked = False        # ë§ˆìš°ìŠ¤ í´ë¦­ ì²´í¬
 
-    # Setting º¯¼ö
-    num_of_player = 2
-    num_of_mal = 4
+    # ë°˜í™˜í•  ì„¤ì • ë³€ìˆ˜ (ê¸°ë³¸ í”Œë ˆì´ì–´ 2, ë§ 4)
+    numOfPlayer = 2
+    numOfHorse = 4
 
     while intro:
-        # ÀÌº¥Æ® ¼³Á¤
-        # Á¾·á¿Í °ÔÀÓ½ÃÀÛ °ü·Ã ÀÌº¥Æ®¸¸ ÁöÁ¤
+        # ì´ë²¤íŠ¸ ì„¤ì •
         for event in pygame.event.get():
+            # ì¢…ë£Œ ì´ë²¤íŠ¸
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            # í‚¤ë³´ë“œ ì´ë²¤íŠ¸
             if event.type == KEYUP:
-                # BGM On, Off
+                # BGM On / Off
                 if event.key == ord('p'):
-                    print('p');
                     if music:
                         pygame.mixer.music.stop()
                         music = False
                     else:
                         pygame.mixer.music.play(-1)
                         music = True
+            # ë§ˆìš°ìŠ¤ ëª¨ì…˜ ì´ë²¤íŠ¸
             if event.type == MOUSEMOTION:
-                mouse_x, mouse_y = getMousePos(event)
+                mouseXPos, mouseYPos = getMousePos(event)
                 if not dlg:
-                    # ¸¶¿ì½º°¡ ½ÃÀÛ ±ÛÀÚ¿¡ ´êÀ» ½Ã ±ÛÀÚ È®´ë
-                    if 115 < mouse_x and mouse_x < 205 and 250 < mouse_y and mouse_y < 285:                      
-                        windows.blit(intro_bg, (0, 0))
-                        windows.blit(start_btn_clicked, (128, 260))
+                    # ë§ˆìš°ìŠ¤ê°€ ì‹œì‘ ê¸€ìì— ë‹¿ì„ ì‹œ ê¸€ì í™•ëŒ€
+                    if 115 < mouseXPos and mouseXPos < 205 and 250 < mouseYPos and mouseYPos < 285:                      
+                        windows.blit(spriteIntroBg, (0, 0))
+                        windows.blit(spriteStartBtnOn, (128, 260))
                     else:
-                        windows.blit(intro_bg, (0, 0))
-                        windows.blit(start_btn, (130, 260))
+                        windows.blit(spriteIntroBg, (0, 0))
+                        windows.blit(spriteStartBtn, (130, 260))
+            # ë§ˆìš°ìŠ¤ í´ë¦­ ì´ë²¤íŠ¸
             if event.type == MOUSEBUTTONUP:
-                mouse_x, mouse_y = getMousePos(event)
-                # ¸¶¿ì½º°¡ ½ÃÀÛ ±ÛÀÚ¿¡ ´êÀ» ½Ã È¿°úÀ½ ¹ß»ı ¹× ±ÛÀÚ È®´ë
-                if 115 < mouse_x and mouse_x < 205 and 250 < mouse_y and mouse_y < 285 and not dlg:
-                    clickSound.play()                    
-                    windows.blit(set_dialog, (220, 100))
-                    windows.blit(set_cursor, (430, 202))
-                    windows.blit(set_cursor, (535, 263))
+                mouseXPos, mouseYPos = getMousePos(event)
+                # ì‹œì‘ í´ë¦­ ì‹œ ì„¸íŒ… ë‹¤ì´ì–¼ë¡œê·¸ë¥¼ ì—´ë©´ì„œ íš¨ê³¼ìŒ ë°œìƒ
+                if 115 < mouseXPos and mouseXPos < 205 and 250 < mouseYPos and mouseYPos < 285 and not dlg:
+                    soundClick.play()                    
+                    windows.blit(spriteSetDialog, (220, 100))
+                    windows.blit(spriteSelectCursor, (430, 202))
+                    windows.blit(spriteSelectCursor, (535, 263))
                 
                     dlg = True
-                    num_of_player = 2
-                    num_of_mal = 4
-                
-                # ¼¼ÆÃ Ã¢ÀÌ ¿­·ÁÀÖÀ» ¶§ ¸¶¿ì½º Ã³¸®
+                    numOfPlayer = 2
+                    numOfHorse = 4
+                # ì„¸íŒ… ë‹¤ì´ì–¼ë¡œê·¸ê°€ ì—´ë ¤ìˆì„ ë•Œ ë§ˆìš°ìŠ¤ ì²˜ë¦¬
                 else:
-                    # ÇÃ·¹ÀÌ¾î Ã¼Å©
-                    if 418 < mouse_x and mouse_x < 458 and 208 < mouse_y and mouse_y < 248:
-                        mouse_clicked = True
-                        num_of_player = 2
-                    elif 470 < mouse_x and mouse_x < 510 and 208 < mouse_y and mouse_y < 248:
-                        mouse_clicked = True
-                        num_of_player = 3
-                    elif 520 < mouse_x and mouse_x < 560 and 208 < mouse_y and mouse_y < 248:
-                        mouse_clicked = True
-                        num_of_player = 4
-                    # ¸» Ã¼Å©
-                    elif 418 < mouse_x and mouse_x < 458 and 269 < mouse_y and mouse_y < 308:
-                        mouse_clicked = True
-                        num_of_mal = 2
-                    elif 470 < mouse_x and mouse_x < 510 and 269 < mouse_y and mouse_y < 308:
-                        mouse_clicked = True
-                        num_of_mal = 3
-                    elif 520 < mouse_x and mouse_x < 560 and 269 < mouse_y and mouse_y < 308:
-                        mouse_clicked = True
-                        num_of_mal = 4
-                    elif 572 < mouse_x and mouse_x < 612 and 269 < mouse_y and mouse_y < 308:
-                        mouse_clicked = True
-                        num_of_mal = 5
-                    # X ¹öÆ°
-                    elif 628 < mouse_x and mouse_x < 645 and 124 < mouse_y and mouse_y < 140:
-                        clickSound.play()
-                        windows.blit(intro_bg, (0, 0))
-                        windows.blit(start_btn, (130, 260))
+                    # í”Œë ˆì´ì–´ ì²´í¬
+                    if 418 < mouseXPos and mouseXPos < 458 and 208 < mouseYPos and mouseYPos < 248:
+                        mouseClicked = True
+                        numOfPlayer = 2
+                    elif 470 < mouseXPos and mouseXPos < 510 and 208 < mouseYPos and mouseYPos < 248:
+                        mouseClicked = True
+                        numOfPlayer = 3
+                    elif 520 < mouseXPos and mouseXPos < 560 and 208 < mouseYPos and mouseYPos < 248:
+                        mouseClicked = True
+                        numOfPlayer = 4
+                    # ë§ ì²´í¬
+                    elif 418 < mouseXPos and mouseXPos < 458 and 269 < mouseYPos and mouseYPos < 308:
+                        mouseClicked = True
+                        numOfHorse = 2
+                    elif 470 < mouseXPos and mouseXPos < 510 and 269 < mouseYPos and mouseYPos < 308:
+                        mouseClicked = True
+                        numOfHorse = 3
+                    elif 520 < mouseXPos and mouseXPos < 560 and 269 < mouseYPos and mouseYPos < 308:
+                        mouseClicked = True
+                        numOfHorse = 4
+                    elif 572 < mouseXPos and mouseXPos < 612 and 269 < mouseYPos and mouseYPos < 308:
+                        mouseClicked = True
+                        numOfHorse = 5
+                    # X ë²„íŠ¼
+                    elif 628 < mouseXPos and mouseXPos < 645 and 124 < mouseYPos and mouseYPos < 140:
+                        soundClick.play()
+                        windows.blit(spriteIntroBg, (0, 0))
+                        windows.blit(spriteStartBtn, (130, 260))
                         dlg = False
-                    # ½ÃÀÛ ¹öÆ°
-                    elif 495 < mouse_x and mouse_x < 650 and 344 < mouse_y and mouse_y < 404:
-                        clickSound.play()
+                    # ì‹œì‘ ë²„íŠ¼
+                    elif 495 < mouseXPos and mouseXPos < 650 and 344 < mouseYPos and mouseYPos < 404:
+                        soundClick.play()                        
+                        time.sleep(0.5)
+
+                        # ê²Œì„ í™”ë©´ ì´ë¯¸ì§€ ë¯¸ë¦¬ ë Œë”ë§
+                        spriteGameBg = pygame.image.load('images/game/bg_game.png')
+                        windows.blit(spriteGameBg, (0, 0))
                         intro = False
                 
-                    if mouse_clicked and dlg:
-                        windows.blit(set_dialog, (220, 100))
-                        if num_of_player == 2:
-                            windows.blit(set_cursor, (430, 202))
-                        elif num_of_player == 3:
-                            windows.blit(set_cursor, (482, 202))
-                        elif num_of_player == 4:
-                            windows.blit(set_cursor, (535, 202))
-                        if num_of_mal == 2:
-                            windows.blit(set_cursor, (430, 263))
-                        elif num_of_mal == 3:
-                            windows.blit(set_cursor, (482, 263))
-                        elif num_of_mal == 4:
-                            windows.blit(set_cursor, (535, 263))
-                        elif num_of_mal == 5:
-                            windows.blit(set_cursor, (586, 263))
-                        clickSound.play()
-                        mouse_clicked = False
+                    if mouseClicked and dlg:
+                        windows.blit(spriteSetDialog, (220, 100))
+                        if numOfPlayer == 2:
+                            windows.blit(spriteSelectCursor, (430, 202))
+                        elif numOfPlayer == 3:
+                            windows.blit(spriteSelectCursor, (482, 202))
+                        elif numOfPlayer == 4:
+                            windows.blit(spriteSelectCursor, (535, 202))
+                        if numOfHorse == 2:
+                            windows.blit(spriteSelectCursor, (430, 263))
+                        elif numOfHorse == 3:
+                            windows.blit(spriteSelectCursor, (482, 263))
+                        elif numOfHorse == 4:
+                            windows.blit(spriteSelectCursor, (535, 263))
+                        elif numOfHorse == 5:
+                            windows.blit(spriteSelectCursor, (586, 263))
+                        soundClick.play()
+                        mouseClicked = False
 
-        # È­¸é ¾÷µ¥ÀÌÆ® ÁÖ±â 30 FPS
+        # í™”ë©´ ì—…ë°ì´íŠ¸ ì£¼ê¸° 30 FPS
         pygame.display.update()
-        fps_clock.tick(30)
+        fpsClock.tick(30)
 
-    return num_of_player, num_of_mal
+    return numOfPlayer, numOfHorse
 
-def GameScene(num_of_player, num_of_mal):
-    # °ÔÀÓ ÆäÀÌÁö ¼³Á¤ (BG Music, Image)
-    pygame.mixer.music.load('sounds/GameBGM.mp3')
-    time.sleep(1)
+# ê²Œì„ í™”ë©´ì„ êµ¬ì„±í•˜ëŠ” ë©”ì†Œë“œ
+def GameScene(numOfPlayer, numOfHorse):
+    # ê²Œì„ í˜ì´ì§€ ì„¤ì •
+    pygame.mixer.music.load('sounds/bgm_game.mp3')
     pygame.mixer.music.play(-1)
 
-    # ÇÃ·¡±× º¯¼ö
-    game = True
-    game_bg = pygame.image.load('images/game/GameScene.png')
+    soundClick = pygame.mixer.Sound('sounds/click.wav')
+
+    # ê²Œì„ í™”ë©´ ì´ë¯¸ì§€ ë Œë”ë§
+    spriteGameBg = pygame.image.load('images/game/bg_game.png')
+    windows.blit(spriteGameBg, (0, 0))
+    
+    # Flag ë³€ìˆ˜
+    game = True                 # ì´ë²¤íŠ¸ ë£¨í”„ íƒˆì¶œ
+    music = True                # BGM On / Off 
 
     while game:
-        windows.blit(game_bg, (0,0))
-
         for event in pygame.event.get():
+            # ì¢…ë£Œ ì´ë²¤íŠ¸
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            # í‚¤ë³´ë“œ ì´ë²¤íŠ¸
+            if event.type == KEYUP:
+                # BGM On / Off
+                if event.key == ord('p'):
+                    if music:
+                        pygame.mixer.music.stop()
+                        music = False
+                    else:
+                        pygame.mixer.music.play(-1)
+                        music = True
+                # goto Main
+                if event.key == K_ESCAPE:
+                    game = False
+                
 
-# °ÔÀÓ ½ÇÇà
+        # í™”ë©´ ì—…ë°ì´íŠ¸ ì£¼ê¸° 30 FPS
+        pygame.display.update()
+        fpsClock.tick(30)
+
+# ê²Œì„ ì‹¤í–‰
 initGame()
