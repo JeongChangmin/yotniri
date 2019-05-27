@@ -1,5 +1,6 @@
 ﻿import pygame, sys, time
 from mouse import *
+from player import Player
 from constants import *
 from pygame.locals import *
 
@@ -19,12 +20,12 @@ def initGame():
 
     # Scene 호출
     while True:
-        numOfPlayer, numOfHorse = IntroScene()
-        GameScene(numOfPlayer, numOfHorse)
+        numOfPlayer, numOfHorse = introScene()
+        gameScene(numOfPlayer, numOfHorse)
                    
 
 # 시작 화면을 구성하는 메소드
-def IntroScene():
+def introScene():
     # 인트로 페이지 설정
     pygame.mixer.music.load('sounds/bgm_intro.mp3')
     pygame.mixer.music.play(-1)
@@ -158,7 +159,17 @@ def IntroScene():
     return numOfPlayer, numOfHorse
 
 # 게임 화면을 구성하는 메소드
-def GameScene(numOfPlayer, numOfHorse):
+def gameScene(numOfPlayer, numOfHorse):
+    pygame.font.init()
+    fontObj = pygame.font.Font('fonts/NanumSquare_acB.ttf', 24)
+
+    
+    # 플레이어
+    player = []
+    for i in range(0, numOfPlayer):
+        player.append(Player(i+1, numOfHorse))
+
+    
     # 게임 페이지 설정
     pygame.mixer.music.load('sounds/bgm_game.mp3')
     pygame.mixer.music.play(-1)
@@ -168,12 +179,57 @@ def GameScene(numOfPlayer, numOfHorse):
     # 게임 화면 이미지 렌더링
     spriteGameBg = pygame.image.load('images/game/bg_game.png')
     windows.blit(spriteGameBg, (0, 0))
+    spriteThrow = pygame.image.load('images/game/sprite_throw.png')
+    windows.blit(spriteThrow, (514, 503))
     
     # Flag 변수
     game = True                 # 이벤트 루프 탈출
-    music = True                # BGM On / Off 
+    music = True                # BGM On / Off
 
     while game:
+        # 플레이어 렌더링
+        for p in player:
+            if p.player_id == 1:
+                textSurface = fontObj.render('박 문 일', True, NAME_COLOR)
+                textRect = textSurface.get_rect()
+                textRect.center = (96, 29)
+                windows.blit(textSurface, textRect)
+                for h in p.horse:
+                    if h.horse_id <= 3:
+                        windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 165))
+                    else:
+                        windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 225))
+            elif p.player_id == 2:
+                textSurface = fontObj.render('박 민 수', True, NAME_COLOR)
+                textRect = textSurface.get_rect()
+                textRect.center = (798, 29)
+                windows.blit(textSurface, textRect)
+                for h in p.horse:
+                    if h.horse_id <= 3:
+                        windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 165))
+                    else:
+                        windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 225))
+            elif p.player_id == 3:
+                textSurface = fontObj.render('전 지 훈', True, NAME_COLOR)
+                textRect = textSurface.get_rect()
+                textRect.center = (96, 310)
+                windows.blit(textSurface, textRect)
+                for h in p.horse:
+                    if h.horse_id <= 3:
+                        windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 444))
+                    else:
+                        windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 504))
+            elif p.player_id == 4:
+                textSurface = fontObj.render('정 창 민', True, NAME_COLOR)
+                textRect = textSurface.get_rect()
+                textRect.center = (798, 310)
+                windows.blit(textSurface, textRect)
+                for h in p.horse:
+                    if h.horse_id <= 3:
+                        windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 444))
+                    else:
+                        windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 504))
+
         for event in pygame.event.get():
             # 종료 이벤트
             if event.type == QUIT:
