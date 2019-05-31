@@ -1,4 +1,4 @@
 import pygame
 
-def getMousePos(event):
-    return event.pos
+def get_mouse_pos(event):
+	return event.pos
