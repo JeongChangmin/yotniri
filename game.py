@@ -25,7 +25,6 @@ def init_game():
 	while True:
 		player, horse = intro_scene()
 		set_manager.set_settings(player, horse)
-		print('dd')
 		game_scene()
                    
 
@@ -109,7 +108,6 @@ def intro_scene():
 			
 			windows.blit(sprite_touches[touch_alpha], POS_INTRO_TOUCH)
 			
-
 		# 이벤트 설정
 		for event in pygame.event.get():
 			# 키보드 이벤트
@@ -118,12 +116,10 @@ def intro_scene():
 				if event.key == ord('p') and on_title:
 					if on_music:
 						pygame.mixer.music.stop()
-						pygame.mixer.music.set_volume(0.0)
-						music = False
+						on_music = False
 					else:
 						pygame.mixer.music.play(-1)
-						pygame.mixer.music.set_volume(1.0)
-						music = True
+						on_music = True
 
 			# 마우스 클릭 이벤트
 			if event.type == MOUSEBUTTONUP:
