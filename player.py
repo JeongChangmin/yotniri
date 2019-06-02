@@ -6,7 +6,7 @@ class Player:
 		self.horse = []
 		self.numOfHorse = numOfHorse
 		for i in range(0, numOfHorse):
-			self.horse.append(Horse(self.player_id, i+1, 'images/game/sprite_horse_' + str(player_id) +'.png'))
+			self.horse.append(Horse(self.player_id, i+1))
 		
 		
 

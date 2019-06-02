@@ -1,9 +1,13 @@
 ﻿import pygame, sys, time
 import controller
+
+from sprite import *
 from mouse import *
 from player import Player
 from constants import *
 from pygame.locals import *
+
+from random import *
 
 # 초기 화면을 구성하는 메소드
 def init_game():
@@ -23,7 +27,7 @@ def init_game():
 
 	# Scene 호출
 	while True:
-		player, horse = intro_scene()
+		player, horse = (4,5)#intro_scene()
 		set_manager.set_settings(player, horse)
 		game_scene()
                    
@@ -219,86 +223,206 @@ def game_scene():
 	pygame.mixer.music.play(-1)
 	sound_click = pygame.mixer.Sound('sounds/click.wav')
 
+	sound_yut_nak = []
+	for i in range(1, 5):
+		sound_yut_nak.append(pygame.mixer.Sound('sounds/yut_nak' + str(i) + '.wav'))
+
 	# 게임 관리 객체
 	game_manager = controller.GameManager(set_manager)
 
 	# 게임 이미지 렌더링
 	bg_game = pygame.image.load('images/game/bg_game.png')
-	sprite_throw = pygame.image.load('images/game/sprite_throw.png')
+	#sprite_throw = pygame.image.load('images/game/sprite_throw.png')
 	windows.blit(bg_game, (0, 0))
-	windows.blit(sprite_throw, (514, 503))
+	#windows.blit(sprite_throw, (514, 503))
+
+	image_nak = []
+	for i in range(0, 21):
+		image_nak.append(pygame.image.load('images/game/yut/0/startPlanetYutGame.yut.0.' + str(i) + '.png'))
 
 	# Flag 변수
 	flag_game = True			# 이벤트 반복 플래그
 	on_music = True				# BGM On / Off
 	
-	while flag_game:
-		# 플레이어 렌더링
-		for p in game_manager.get_player():
+
+
+
+	# 테스트
+	rect = windows.get_rect()
+	user_1p_horse = []
+
+	simple = SpritePlayerHorse('images/game/sprite_1p_catch.png', (10,10))
+	simple_group = pygame.sprite.RenderPlain(simple)
+
+	for p in game_manager.get_player():
 			if p.player_id == 1:
-				textSurface = fontObj.render('박 문 일', True, WHITE)
-				textRect = textSurface.get_rect()
-				textRect.center = (96, 29)
-				windows.blit(textSurface, textRect)
-				for h in p.horse:
-					if h.horse_id <= 3:  
-						windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 165))
-					else:
-						windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 225))
-			elif p.player_id == 2:
-				textSurface = fontObj.render('박 민 수', True, WHITE)
-				textRect = textSurface.get_rect()
-				textRect.center = (798, 29)
-				windows.blit(textSurface, textRect)
 				for h in p.horse:
 					if h.horse_id <= 3:
-						windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 165))
+						user_1p_horse.append(SpritePlayerHorse('images/game/sprite_1p_goal.png', (15 + (h.horse_id - 1) * 60, 163)))
 					else:
-						windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 225))
-			elif p.player_id == 3:
-				textSurface = fontObj.render('전 지 훈', True, WHITE)
-				textRect = textSurface.get_rect()
-				textRect.center = (96, 310)
-				windows.blit(textSurface, textRect)
-				for h in p.horse:
-					if h.horse_id <= 3:
-						windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 444))
-					else:
-						windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 504))
-			elif p.player_id == 4:
-				textSurface = fontObj.render('정 창 민', True, WHITE)
-				textRect = textSurface.get_rect()
-				textRect.center = (798, 310)
-				windows.blit(textSurface, textRect)
-				for h in p.horse:
-					if h.horse_id <= 3:
-						windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 444))
-					else:
-						windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 504))
+						user_1p_horse.append(SpritePlayerHorse('images/game/sprite_1p_normal.png', (15 + (h.horse_id - 4) * 60, 221)))
+
+	user_1p_horse_group = pygame.sprite.RenderPlain(*user_1p_horse)
+	n = 0
+
+	sprite_throw = SpriteThrowYut((514, 503))
+	sprite_throw_group = pygame.sprite.RenderPlain(sprite_throw)
+
+	sprite_yut = SpriteYut((240, 70))
+	sprite_yut_group = pygame.sprite.RenderPlain(sprite_yut)
+
+	while True:
+		
+
 
 		for event in pygame.event.get():
 			# 종료 이벤트
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
-			# 키보드 이벤트
-			if event.type == KEYUP:
-				# BGM On / Off
-				if event.key == ord('p'):
-					if music:
-						pygame.mixer.music.stop()
-						music = False
-					else:
-						pygame.mixer.music.play(-1)
-						music = True
-				# 메인 화면으로 이동
-				if event.key == K_ESCAPE:
-					flag_game = False
-                
 
-		# 화면 갱신 주기 30 fps
-		pygame.display.update()
-		fps.tick(30)
+			if event.type == KEYUP:
+				if event.key == ord('a'):
+					n = 1
+				elif event.key == ord('s'):
+					n = 2
+				elif event.key == ord('d'):
+					temp = n
+					n = 3
+
+					user_1p_horse_group.update(n)
+
+					n = temp
+
+			# 마우스 모션 이벤트
+			if event.type == MOUSEMOTION:
+				mouse_x, mouse_y = get_mouse_pos(event)
+				
+				# 윷 던지기 스프라이트
+				if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562:
+					sprite_throw.update(1)
+				else:
+					sprite_throw.update(0)
+
+			if event.type == MOUSEBUTTONDOWN:
+				mouse_x, mouse_y = get_mouse_pos(event)
+				
+				# 윷 던지기 스프라이트
+				if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562:
+					sprite_throw.update(2)
+
+			if event.type == MOUSEBUTTONUP:
+				mouse_x, mouse_y = get_mouse_pos(event)
+				
+				# 윷 던지기 스프라이트
+				if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562:
+					sprite_throw.update(0)
+					
+					n = 0
+					while n < 21:
+						sprite_yut_group.update()
+						sprite_yut_group.clear(windows, bg_game)
+						sprite_yut_group.draw(windows)
+						sprite_throw_group.clear(windows, bg_game)
+						sprite_throw_group.draw(windows)
+
+						n += 1
+						# 윷 결과 보여주기
+						if n == 15:
+							sound_yut_nak[randint(0, len(sound_yut_nak) - 1)].play()
+							time.sleep(1.0)
+						else:
+							time.sleep(0.1)
+
+						pygame.display.update()
+						fps.tick(30)
+	
+					
+					
+						
+					
+
+		user_1p_horse_group.update(n)
+		user_1p_horse_group.clear(windows, bg_game)
+		user_1p_horse_group.draw(windows)
+
+		sprite_throw_group.clear(windows, bg_game)
+		sprite_throw_group.draw(windows)
+
+		pygame.display.flip()
+
+		fps.tick(FPS)
+
+
+
+
+	#while flag_game:
+	#	# 플레이어 렌더링
+	#	for p in game_manager.get_player():
+	#		if p.player_id == 1:
+	#			textSurface = fontObj.render('박 문 일', True, WHITE)
+	#			textRect = textSurface.get_rect()
+	#			textRect.center = (96, 29)
+	#			windows.blit(textSurface, textRect)
+	#			for h in p.horse:
+	#				if h.horse_id <= 3:  
+	#					windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 165))
+	#				else:
+	#					windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 225))
+	#		elif p.player_id == 2:
+	#			textSurface = fontObj.render('박 민 수', True, WHITE)
+	#			textRect = textSurface.get_rect()
+	#			textRect.center = (798, 29)
+	#			windows.blit(textSurface, textRect)
+	#			for h in p.horse:
+	#				if h.horse_id <= 3:
+	#					windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 165))
+	#				else:
+	#					windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 225))
+	#		elif p.player_id == 3:
+	#			textSurface = fontObj.render('전 지 훈', True, WHITE)
+	#			textRect = textSurface.get_rect()
+	#			textRect.center = (96, 310)
+	#			windows.blit(textSurface, textRect)
+	#			for h in p.horse:
+	#				if h.horse_id <= 3:
+	#					windows.blit(h.sprite_img, (15 + (h.horse_id - 1) * 60, 444))
+	#				else:
+	#					windows.blit(h.sprite_img, (15 + (h.horse_id - 4) * 60, 504))
+	#		elif p.player_id == 4:
+	#			textSurface = fontObj.render('정 창 민', True, WHITE)
+	#			textRect = textSurface.get_rect()
+	#			textRect.center = (798, 310)
+	#			windows.blit(textSurface, textRect)
+	#			for h in p.horse:
+	#				if h.horse_id <= 3:
+	#					windows.blit(h.sprite_img, (712 + (h.horse_id - 1) * 60, 444))
+	#				else:
+	#					windows.blit(h.sprite_img, (712 + (h.horse_id - 4) * 60, 504))
+	#
+	#	for event in pygame.event.get():
+	#		# 종료 이벤트
+	#		if event.type == QUIT:
+	#			pygame.quit()
+	#			sys.exit()
+	#		# 키보드 이벤트
+	#		if event.type == KEYUP:
+	#			# BGM On / Off
+	#			if event.key == ord('p'):
+	#				if music:
+	#					pygame.mixer.music.stop()
+	#					music = False
+	#				else:
+	#					pygame.mixer.music.play(-1)
+	#					music = True
+	#			# 메인 화면으로 이동
+	#			if event.key == K_ESCAPE:
+	#				flag_game = False
+    #            
+	#
+	#	# 화면 갱신 주기 30 fps
+	#	pygame.display.update()
+	#	fps.tick(30)
 
 # 게임 실행
 init_game()
