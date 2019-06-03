@@ -11,7 +11,7 @@ WHITE = (255,255,255)
 RED   = (255,  0,  0)
 GREEN = (0  ,255,  0)
 BLUE  = (0  ,  0,255)
-NAME_COLOR  = (242,199, 81)
+NAME_COLOR  = (236,177, 6)
 
 # FPS
 FPS = 30
