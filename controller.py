@@ -8,6 +8,7 @@ class Controller:
 		self.view = view.View()
 
 		self.player = []
+		self.turn = 1
 
 	# 게임 실행
 	def run_game(self):
@@ -15,7 +16,8 @@ class Controller:
 			self.view.show_intro(self)
 			self.game_setting()
 			self.view.show_game(self)
-	
+			self.game_reset()
+
 	# 플레이어 세팅
 	def game_setting(self):
 		num_data = self.model.setting.get_setting()
@@ -31,9 +33,40 @@ class Controller:
 				player_name = '정 창 민'
 			self.player.append(model.Player(i, player_name, num_data['num_of_horse']))
 
+	# 게임 리셋
+	def game_reset(self):
+		self.player.clear()
+		self.turn = 1
+
 	# 윷 던지기 랜덤 값
 	def random_yut(self):
-		return random.randint(0, 5)
+		val = random.randint(0, 100)
+		yut = 0
+
+		# 확률 조정
+		if 0 <= val and val < 5:
+			yut = 0
+		elif 5 <= val and val < 20:
+			yut = 1
+		elif 20 <= val and val < 55:
+			yut = 4#2
+		elif 55 <= val and val < 80:
+			yut = 3
+		elif 80 <= val and val < 90:
+			yut = 4
+		else:
+			yut = 5
+
+		return yut
+
+	# 게임 턴을 알림
+	def next_turn(self):
+		if self.turn >= self.model.setting.get_setting()['num_of_player']:
+			self.turn = 1
+		else:
+			self.turn += 1
+		print(self.turn)
+		return self.turn
 
 	# Action ( ↔ Model)
 	def action(self, action, data = 0):
@@ -44,28 +77,12 @@ class Controller:
 			return self.model.setting.get_setting()
 		elif action == 'get_setting_default':
 			return self.model.setting.get_default()
-		
-	
-
-
-
-
-
-
-
-
-# 게임을 전반적으로 관리하는 클래스
-class GameManager:
-	# manager = SettingManager
-	def __init__(self, manager):
-		self.player = []
-		
-		for i in range(0, manager.get_num_of_player()):
-			self.player.append(Player(i+1, manager.get_num_of_horse()))
-
-	def get_player(self):
-		return self.player
-
+		elif action == 'set_yut':
+			self.player[self.turn - 1].set_yut(data)
+		elif action == 'get_yut':
+			return self.player[self.turn - 1].get_yut()
+		elif action == 'clear_yut':
+			self.player[self.turn - 1].clear_yut()
 
 
 if __name__ == "__main__":

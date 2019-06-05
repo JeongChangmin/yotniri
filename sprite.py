@@ -73,8 +73,8 @@ class Horse(pygame.sprite.Sprite):
 		self.image = self.image_norm
 		self.rect = pos
 
-	def update(self):
-		pass
+	def update(self, pos):
+		self.rect = pos
 
 class Yut(pygame.sprite.Sprite):
 	def __init__(self, pos):
@@ -117,3 +117,13 @@ class Yut(pygame.sprite.Sprite):
 			self.image = self.image_yut[self.index]
 		elif value == 5:
 			self.image = self.image_mo[self.index]
+
+class Selector(pygame.sprite.Sprite):
+	def __init__(self, pos):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = pygame.image.load('images/game/sprite_arrow_select.png')
+		self.rect = pos
+
+	def update(self, pos):
+		self.rect = pos

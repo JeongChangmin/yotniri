@@ -31,6 +31,47 @@ class Player:
 		for i in range(1, num_of_horse + 1):
 			self.horse.append(Horse(player_id, i))
 
+		self.yut = {} 					# 뒷도 ~ 모
+		self.num_of_wait = num_of_horse	# 대기열에 있는 말 개수
+
+	def get_yut(self):
+		return self.yut
+
+	def set_yut(self, data):
+		if data == 0:
+			if 'back' in self.yut.keys():
+				self.yut['back'] = self.yut['back'] + 1
+			else:
+				self.yut['back'] = 1
+		elif data == 1:
+			if 'do' in self.yut.keys():
+				self.yut['do'] = self.yut['do'] + 1
+			else:
+				self.yut['do'] = 1
+		elif data == 2:
+			if 'gae' in self.yut.keys():
+				self.yut['gae'] = self.yut['gae'] + 1
+			else:
+				self.yut['gae'] = 1
+		elif data == 3:
+			if 'girl' in self.yut.keys():
+				self.yut['girl'] = self.yut['girl'] + 1
+			else:
+				self.yut['girl'] = 1
+		elif data == 4:
+			if 'yut' in self.yut.keys():
+				self.yut['yut'] = self.yut['yut'] + 1
+			else:
+				self.yut['yut'] = 1
+		elif data == 5:
+			if 'mo' in self.yut.keys():
+				self.yut['mo'] = self.yut['mo'] + 1
+			else:
+				self.yut['mo'] = 1
+
+	def clear_yut(self):
+		self.yut.clear()
+
 
 # 말 클래스
 class Horse:

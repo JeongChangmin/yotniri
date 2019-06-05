@@ -88,13 +88,13 @@ class View:
 					if on_title:
 						if 0 <= mouse_x and mouse_x <= WINDOW_WIDTH and 0 <= mouse_y and mouse_y <= WINDOW_HEIGHT and not on_dlg:
 							sound_click.play()
-							
+
 							sprite_dlg_g.draw(self.window)
 							self.window.blit(sprite_selector, (430, 202))
 							self.window.blit(sprite_selector, (535, 263))
 
 							num_of_player, num_of_horse = controller.action('get_setting_default')
-							
+
 							on_dlg = True
 							continue
 					if on_dlg:
@@ -137,7 +137,7 @@ class View:
 
 							# 설정 저장
 							controller.action('set_setting', { 'num_of_player' : num_of_player, 'num_of_horse' : num_of_horse})
-							
+
 							sprite_bg = pygame.image.load('images/game/bg_game.png')
 							event_loop = False
 
@@ -167,6 +167,8 @@ class View:
 
 	# Show Game
 	def show_game(self, controller):
+		import sprite
+
 		# 폰트
 		pygame.font.init()
 		font_obj = pygame.font.Font('fonts/malgunbd.ttf', 18)
@@ -175,31 +177,84 @@ class View:
 		sprite_bg = pygame.image.load('images/game/bg_game.png')
 		self.window.blit(sprite_bg, POS_ORIGIN)
 
+		# 말을 전부 처리
+		sprite_horse = []
+
 		# 폰트 처리 / 스탠딩 처리
 		for i in range(0, len(controller.player)):
 			font_surface = font_obj.render(controller.player[i].player_name, True, NAME_COLOR)
 			sprite_standing = pygame.image.load('images/game/sprite_' + str(i+1) + 'p_standing.png')
 
 			if i == 0:
+				sprite_temp = []
+				for n in range(0, controller.action('get_setting')['num_of_horse']):
+					if n < 3:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_1P_HORSE_X + (n * 58), POS_1P_HORSE_Y_1)))
+					else:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_1P_HORSE_X + ((n - 3) * 58), POS_1P_HORSE_Y_2)))
+				sprite_horse.append(sprite_temp)
 				self.window.blit(font_surface, (66, 18))
 				self.window.blit(sprite_standing, POS_1P_STANDING)
 			elif i == 1:
+				sprite_temp = []
+				for n in range(0, controller.action('get_setting')['num_of_horse']):
+					if n < 3:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_2P_HORSE_X + (n * 58), POS_2P_HORSE_Y_1)))
+					else:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_2P_HORSE_X + ((n - 3) * 58), POS_2P_HORSE_Y_2)))
+				sprite_horse.append(sprite_temp)
 				self.window.blit(font_surface, (765, 18))
 				self.window.blit(sprite_standing, POS_2P_STANDING)
 			elif i == 2:
+				sprite_temp = []
+				for n in range(0, controller.action('get_setting')['num_of_horse']):
+					if n < 3:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_3P_HORSE_X + (n * 58), POS_3P_HORSE_Y_1)))
+					else:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_3P_HORSE_X + ((n - 3) * 58), POS_3P_HORSE_Y_2)))
+				sprite_horse.append(sprite_temp)
 				self.window.blit(font_surface, (66, 297))
 				self.window.blit(sprite_standing, POS_3P_STANDING)
 			elif i == 3:
+				sprite_temp = []
+				for n in range(0, controller.action('get_setting')['num_of_horse']):
+					if n < 3:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_4P_HORSE_X + (n * 58), POS_4P_HORSE_Y_1)))
+					else:
+						sprite_temp.append(sprite.Horse(i + 1, (POS_4P_HORSE_X + ((n - 3) * 58), POS_4P_HORSE_Y_2)))
+				sprite_horse.append(sprite_temp)
 				self.window.blit(font_surface, (765, 297))
 				self.window.blit(sprite_standing, POS_4P_STANDING)
 
 		# 스프라이트
 		sprite_throw = sprite.ThrowYut(POS_GAME_THROW_YUT)
 		sprite_yut = sprite.Yut(POS_GAME_YUT)
+		sprite_selector = sprite.Selector((-30, -30))
+
+		sprite_yut_result = {
+			'back' : pygame.image.load('images/game/sprite_yut_result_0.png'),
+			'do' : pygame.image.load('images/game/sprite_yut_result_1.png'),
+			'gae' : pygame.image.load('images/game/sprite_yut_result_2.png'),
+			'girl' : pygame.image.load('images/game/sprite_yut_result_3.png'),
+			'yut' : pygame.image.load('images/game/sprite_yut_result_4.png'),
+			'mo' : pygame.image.load('images/game/sprite_yut_result_5.png'),
+		}
+		sprite_yut_stack = [
+			0, 0,
+			pygame.image.load('images/game/sprite_group_2.png'),
+			pygame.image.load('images/game/sprite_group_3.png'),
+			pygame.image.load('images/game/sprite_group_4.png'),
+			pygame.image.load('images/game/sprite_group_5.png')
+		]
 
 		# 이미지 렌더링
 		sprite_throw_g = pygame.sprite.RenderPlain(sprite_throw)
 		sprite_yut_g = pygame.sprite.RenderPlain(sprite_yut)
+		sprite_selector_g = pygame.sprite.RenderPlain(sprite_selector)
+
+		sprite_horse_render = []
+		for sprite in sprite_horse:
+			sprite_horse_render.append(pygame.sprite.RenderPlain(*sprite))
 
 		# 사운드 (배경 / 효과음)
 		pygame.mixer.Sound('sounds/start.wav').play()
@@ -233,13 +288,15 @@ class View:
 		for i in range(1, 6):
 			sound_goal.append(pygame.mixer.Sound('sounds/goal' + str(i) + '.wav'))
 		sound_win = pygame.mixer.Sound('sounds/Win_Y.wav')
-			
+
 		# 플래그
 		event_loop = True				# 이벤트 반복
 		rand_yut = 0					# 윷 던지기 결과
 		throw_push = False				# 윷 던지기 플래그
 		rand_yut_cnt = 0				# 윷 던지기 카운트 (스프라이트)
-		
+
+		selection = False				# 플레이어가 말을 이동할 준비
+		test_dict = {}
 
 		# 이벤트 처리
 		while event_loop:
@@ -254,12 +311,20 @@ class View:
 					if event.key == K_ESCAPE:
 						event_loop = False
 
+					# 말 이동 테스트
+					if event.key == ord('t'):
+						selection = False
+						sprite_selector_g.update((-30, -30))
+						controller.action('clear_yut')
+						controller.next_turn()
+
+
 				# 마우스 이벤트 (모션)
 				if event.type == MOUSEMOTION:
 					mouse_x, mouse_y = self.get_mouse_pos(event)
 
 					# 윷 던지기
-					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push:
+					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push and not selection:
 						sprite_throw.update(1)
 					else:
 						sprite_throw.update(0)
@@ -269,7 +334,7 @@ class View:
 					mouse_x, mouse_y = self.get_mouse_pos(event)
 
 					# 윷 던지기
-					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push:
+					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push and not selection:
 						sprite_throw.update(2)
 
 				# 마우스 이벤트 (클릭 업)
@@ -277,14 +342,12 @@ class View:
 					mouse_x, mouse_y = self.get_mouse_pos(event)
 
 					# 윷 던지기
-					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push:
+					if 514 <= mouse_x and mouse_x <= 688 and 503 <= mouse_y and mouse_y <= 562 and not throw_push and not selection:
 						sprite_throw.update(0)
 
 						throw_push = True
 						rand_yut_cnt = 0
 						rand_yut = controller.random_yut()
-
-			
 			# 윷 던지기 애니메이션
 			if throw_push:
 				sprite_yut_g.update(rand_yut)
@@ -295,6 +358,10 @@ class View:
 
 				if rand_yut_cnt == 15:
 					sound_yut[rand_yut][random.randint(0, 3)].play()
+
+					# 플레이어 윷 스택 추가
+					controller.action('set_yut', rand_yut)
+
 					time.sleep(1.0)
 				else:
 					time.sleep(0.1)
@@ -303,11 +370,60 @@ class View:
 					throw_push = False
 					rand_yut_cnt = 0
 					sprite_yut_g.clear(self.window, sprite_bg)
-			
+
+					# 플레이어 윷 렌더링
+					# 배경 이미지 다시 그림
+					self.window.blit(sprite_bg, POS_ORIGIN)
+					for i in range(0, len(controller.player)):
+						font_surface = font_obj.render(controller.player[i].player_name, True, NAME_COLOR)
+						sprite_standing = pygame.image.load('images/game/sprite_' + str(i+1) + 'p_standing.png')
+
+						if i == 0:
+							self.window.blit(font_surface, (66, 18))
+							self.window.blit(sprite_standing, POS_1P_STANDING)
+						elif i == 1:
+							self.window.blit(font_surface, (765, 18))
+							self.window.blit(sprite_standing, POS_2P_STANDING)
+						elif i == 2:
+							self.window.blit(font_surface, (66, 297))
+							self.window.blit(sprite_standing, POS_3P_STANDING)
+						elif i == 3:
+							self.window.blit(font_surface, (765, 297))
+							self.window.blit(sprite_standing, POS_4P_STANDING)
+
+					yut_result_x = 219
+					for key, value in controller.action('get_yut').items():
+						self.window.blit(sprite_yut_result[key], (yut_result_x, 511))
+						if 2 <= value and value <= 5:
+							self.window.blit(sprite_yut_stack[value], (yut_result_x + 30, 511))
+
+						yut_result_x += 59
+
+					# 말을 던지기 위해 셀렉터 배치
+					if rand_yut != 4 and rand_yut != 5:
+						if controller.turn == 1:
+							if rand_yut != 0:
+								sprite_selector_g.update((145, 70))
+						elif controller.turn == 2:
+							if rand_yut != 0:
+								sprite_selector_g.update((720, 70))
+						elif controller.turn == 3:
+							if rand_yut != 0:
+								sprite_selector_g.update((145, 350))
+						elif controller.turn == 4:
+							if rand_yut != 0:
+								sprite_selector_g.update((720, 350))
+						selection = True
 
 			# 이미지 업데이트
 			sprite_throw_g.clear(self.window, sprite_bg)
 			sprite_throw_g.draw(self.window)
+			sprite_selector_g.clear(self.window, sprite_bg)
+			sprite_selector_g.draw(self.window)
+			# 말 업데이트
+			for render in sprite_horse_render:
+				render.clear(self.window, sprite_bg)
+				render.draw(self.window)
 
 			# 화면 업데이트
 			pygame.display.update()
