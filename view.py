@@ -44,7 +44,7 @@ class View:
 		sprite_dlg_g = pygame.sprite.RenderPlain(sprite_dlg)
 
 		# 사운드 (배경 / 효과음)
-		pygame.mixer.music.load('sounds/1.mp3')
+		pygame.mixer.music.load('sounds/bgm_intro.mp3')
 		sound_click = pygame.mixer.Sound('sounds/click.wav')
 
 		# 플래그

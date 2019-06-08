@@ -2,20 +2,17 @@
 
 
 ## About The Project
-<img src="sample.png" width="500" height="300"></img>
-
-## Getting Started
-
-## Usage
-
-## Contributing
+<img src="sample_1.png"></img>
+<img src="sample_2.png"></img>
+<img src="sample_3.png"></img>
+<img src="sample_4.png"></img>
 
 ## License
 Distributed under the ICT Team 10. LICENSE for more information.
 
 ## Contact
-* 박문일
-* 박민수
+* 박문일 (MoonilPark)
+* 박민수 (MinsuPark)
 * 전지훈 (JihunJeon)
 * 정창민 (ChangMinJeong)
 
