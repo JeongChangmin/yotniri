@@ -1,16 +1,16 @@
 
 
 
-## 휴먼 ICT 소프트웨어 공학 - 팀프로젝트 윷놀이
+## About The Project
 <img src="sample.png" width="500" height="300"></img>
 
-## 개발 환경
+## Getting Started
 
-## API 레퍼런스
+## Usage
 
-## 실행 방법
+## Contributing
 
-## 업데이트 내역
+## License
+Distributed under the ICT Team 10. LICENSE for more information.
 
-## 라이센스
-Copyright 2019. ICT Team 10. All rights reserved.
+## Acknowledgements
