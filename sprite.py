@@ -61,20 +61,32 @@ class ThrowYut(pygame.sprite.Sprite):
 		elif value == 2:
 			self.image = self.image_press
 
+
 class Horse(pygame.sprite.Sprite):
-	def __init__(self, player_id, pos):
+	def __init__(self, player_id, index, pos):
 		pygame.sprite.Sprite.__init__(self)
 
-		self.image_norm = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_normal.png')
-		self.image_goal = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_goal.png')
-		self.image_move = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_move.png')
-		self.image_catch = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_catch.png')
+		self.image_norm = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_normal_' + str(index) + '.png')
+		self.image_goal = pygame.image.load('images/game/sprite_' + str(player_id) + 'p_goaled_' + str(index) + '.png')
 
 		self.image = self.image_norm
 		self.rect = pos
 
 	def update(self, pos):
 		self.rect = pos
+
+	def switch(self, to):
+		x,y = self.rect
+
+		if  to == 'norm':
+			self.image = self.image_norm
+			self.rect = (x+7, y+7)
+		elif to == 'goal':
+			self.image = self.image_goal
+			self.rect = (x-7, y-7)
+
+	def ret_wait(self):
+		self.rect = (-100,-100)
 
 class Yut(pygame.sprite.Sprite):
 	def __init__(self, pos):
@@ -100,6 +112,9 @@ class Yut(pygame.sprite.Sprite):
 		self.image = self.image_do[self.index]
 		self.rect = pos
 
+	def new_pos(self):
+		self.rect = (0,0)
+
 	def update(self, value):
 		self.index += 1
 		if self.index >= len(self.image_do):
@@ -118,11 +133,22 @@ class Yut(pygame.sprite.Sprite):
 		elif value == 5:
 			self.image = self.image_mo[self.index]
 
-class Selector(pygame.sprite.Sprite):
+class GroupStack(pygame.sprite.Sprite):
+	def __init__(self, src, pos):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = pygame.image.load(src)
+		self.rect = pos
+
+	def update(self, pos):
+		self.rect = pos
+
+
+class GameOver(pygame.sprite.Sprite):
 	def __init__(self, pos):
 		pygame.sprite.Sprite.__init__(self)
 
-		self.image = pygame.image.load('images/game/sprite_arrow_select.png')
+		self.image = pygame.image.load('images/game/sprite_gamewin.png')
 		self.rect = pos
 
 	def update(self, pos):
