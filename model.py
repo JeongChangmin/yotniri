@@ -1,4 +1,3 @@
-# 플레이어 클래스
 class Player:
 	def __init__(self, player_id, player_name, num_of_horse):
 		self.player_id = player_id
@@ -12,7 +11,6 @@ class Player:
 		self.wait = num_of_horse		# 대기열에 있는 말 개수
 		self.goal = 0					# 골인한 말 개수
 		self.throwable = False			# 더 던질 수 있는지
-		self.group_id = [0,1,2,3,4]		# 그룹 코드
 		self.group = [
 				[], [], [], [], []
 			]
@@ -54,10 +52,6 @@ class XY:
 
 		self.player_id = 0
 		self.horse_id = 0
-
-	# 해당 위치에 다른 말이 있는지 반환
-	def is_exist(self):
-		return self.exist
 
 	# 위치 정보 갱신
 	def arrive_info(self, horse):

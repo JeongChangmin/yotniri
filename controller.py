@@ -10,7 +10,7 @@ class Controller:
 
 		# 게임 기본 세팅
 		self.num_of_player = 2
-		self.num_of_horse = 4
+		self.num_of_horse = 2
 		self.default_value = (2, 4)
 
 		self.player = []	# 플레이어 정보
@@ -19,7 +19,7 @@ class Controller:
 	# 게임 실행
 	def run_game(self):
 		while True:
-			self.view.show_intro(self)
+			#self.view.show_intro(self)
 			self.game_setting()
 			self.view.show_game(self)
 			self.game_reset()
@@ -44,7 +44,7 @@ class Controller:
 
 	# 윷 던지기 랜덤 값
 	def throw_random_yut(self):
-		return random.randint(3,3)#random.randint(0, 5)
+		return random.randint(0,5)
 
 	# 게임 턴을 넘김
 	def next_turn(self):

@@ -148,8 +148,15 @@ class GameOver(pygame.sprite.Sprite):
 	def __init__(self, pos):
 		pygame.sprite.Sprite.__init__(self)
 
-		self.image = pygame.image.load('images/game/sprite_gamewin.png')
+		self.images = []
+		for i in range(0, 3):
+			self.images.append(pygame.image.load('images/game/sprite_gamewin_' + str(i+1) + '.png'))
+
+		self.image = self.images[0]
 		self.rect = pos
 
 	def update(self, pos):
 		self.rect = pos
+
+	def set_winner(self, val):
+		self.image = self.images[val]
