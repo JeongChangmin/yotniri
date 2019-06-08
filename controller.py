@@ -19,8 +19,7 @@ class Controller:
 	# 게임 실행
 	def run_game(self):
 		while True:
-			#self.view.show_intro(self)
-
+			self.view.show_intro(self)
 			self.game_setting()
 			self.view.show_game(self)
 			self.game_reset()

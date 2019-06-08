@@ -380,29 +380,31 @@ class View:
 
 
 						# 셀렉터가 배치되어 있을 시 (말 선택)
-						# 1P 말 이동
 						print(mouse_x, mouse_y)
+						
+						######
+						# 1P
+						######
 						if controller.turn == 1 and on_selector:
 							push = False
-							# 1P (1,1)
-							if 15 <= mouse_x and mouse_x <= 63 and 167 <= mouse_y and mouse_y <= 213:
-								if not controller.player[controller.turn-1].horse[0].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[0])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[0].horse_id in group:
-													for h in group:
-														sprite_horse[0][h-1].switch('goal')
-														sprite_mover[0][h-1].ret_wait()
-														controller.player[0].goal += 1
-														controller.player[0].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+							if 15 <= mouse_x and mouse_x <= 63 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 1:
+								if not controller.player[controller.turn-1].horse[0].goal:
+									ret = controller.game.move(controller, controller.player[0], controller.player[0].horse[0])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[0].horse[0].goal:
+												pass
+											else:
+												for group in controller.player[0].group:
+													if controller.player[0].horse[0].horse_id in group:
+														for h in group:
+															sprite_horse[0][h-1].switch('goal')
+															sprite_mover[0][h-1].ret_wait()
+															controller.player[0].goal += 1
+															controller.player[0].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[0].horse[0].goal:
 												pass
@@ -412,39 +414,49 @@ class View:
 												controller.player[0].goal += 1
 												controller.player[0].horse[0].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[0][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[0][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[0].horse_id in group:
+											for group in controller.player[0].group:
+												if controller.player[0].horse[0].horse_id in group:
 													for h in group:
-														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[0].horse[h-1].position[1]][controller.player[0].horse[h-1].position[0]])
 										else:
 											sprite_mover[0][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
-										on_selector = False
 										push = True
-							# 1P (1,2)
-							elif 75 <= mouse_x and mouse_x <= 123 and 167 <= mouse_y and mouse_y <= 213:
-								if not controller.player[controller.turn-1].horse[1].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[1])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[1].horse_id in group:
-													for h in group:
-														sprite_horse[0][h-1].switch('goal')
-														sprite_mover[0][h-1].ret_wait()
-														controller.player[0].goal += 1
-														controller.player[0].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+
+							elif 75 <= mouse_x and mouse_x <= 123 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 2:
+								if not controller.player[controller.turn-1].horse[1].goal:
+									ret = controller.game.move(controller, controller.player[0], controller.player[0].horse[1])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[0].horse[1].goal:
+												pass
+											else:
+												for group in controller.player[0].group:
+													if controller.player[0].horse[1].horse_id in group:
+														for h in group:
+															sprite_horse[0][h-1].switch('goal')
+															sprite_mover[0][h-1].ret_wait()
+															controller.player[0].goal += 1
+															controller.player[0].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[0].horse[1].goal:
 												pass
@@ -452,41 +464,51 @@ class View:
 												sprite_horse[0][1].switch('goal')
 												sprite_mover[0][1].ret_wait()
 												controller.player[0].goal += 1
-												controller.player[0].horse[1].goal = True
+												controller.player[0].horse[0].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[0][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[0][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[1].horse_id in group:
+											for group in controller.player[0].group:
+												if controller.player[0].horse[1].horse_id in group:
 													for h in group:
-														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[0].horse[h-1].position[1]][controller.player[0].horse[h-1].position[0]])
 										else:
-											sprite_mover[0][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
-										on_selector = False
+											sprite_mover[0][1].update(POS_SPRITE_HORSE[controller.player[0].horse[1].position[1]][controller.player[0].horse[1].position[0]])
 										push = True
-							# 1P (1,3)
-							elif 135 <= mouse_x and mouse_x <= 183 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 3:
-								if not controller.player[controller.turn-1].horse[2].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[2])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[2].horse_id in group:
-													for h in group:
-														sprite_horse[0][h-1].switch('goal')
-														sprite_mover[0][h-1].ret_wait()
-														controller.player[0].goal += 1
-														controller.player[0].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+			
+							elif 133 <= mouse_x and mouse_x <= 181 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 3:
+								if not controller.player[controller.turn-1].horse[2].goal:
+									ret = controller.game.move(controller, controller.player[0], controller.player[0].horse[2])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[0].horse[2].goal:
+												pass
+											else:
+												for group in controller.player[0].group:
+													if controller.player[0].horse[2].horse_id in group:
+														for h in group:
+															sprite_horse[0][h-1].switch('goal')
+															sprite_mover[0][h-1].ret_wait()
+															controller.player[0].goal += 1
+															controller.player[0].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[0].horse[2].goal:
 												pass
@@ -496,39 +518,49 @@ class View:
 												controller.player[0].goal += 1
 												controller.player[0].horse[2].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[0][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[0][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[2].horse_id in group:
+											for group in controller.player[0].group:
+												if controller.player[0].horse[2].horse_id in group:
 													for h in group:
-														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[0].horse[h-1].position[1]][controller.player[0].horse[h-1].position[0]])
 										else:
 											sprite_mover[0][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
-										on_selector = False
 										push = True
-							# 1P (2,1)
-							elif 15 <= mouse_x and mouse_x <= 63 and 225 <= mouse_y and mouse_y <= 271 and controller.num_of_horse >= 4:
-								if not controller.player[controller.turn-1].horse[3].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[3])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[3].horse_id in group:
-													for h in group:
-														sprite_horse[0][h-1].switch('goal')
-														sprite_mover[0][h-1].ret_wait()
-														controller.player[0].goal += 1
-														controller.player[0].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+
+							elif 15 <= mouse_x and mouse_x <= 64 and 226 <= mouse_y and mouse_y <= 270 and controller.num_of_horse >= 4:
+								if not controller.player[controller.turn-1].horse[3].goal:
+									ret = controller.game.move(controller, controller.player[0], controller.player[0].horse[3])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[0].horse[3].goal:
+												pass
+											else:
+												for group in controller.player[0].group:
+													if controller.player[0].horse[3].horse_id in group:
+														for h in group:
+															sprite_horse[0][h-1].switch('goal')
+															sprite_mover[0][h-1].ret_wait()
+															controller.player[0].goal += 1
+															controller.player[0].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[0].horse[3].goal:
 												pass
@@ -538,39 +570,49 @@ class View:
 												controller.player[0].goal += 1
 												controller.player[0].horse[3].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[0][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[0][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[3].horse_id in group:
+											for group in controller.player[0].group:
+												if controller.player[0].horse[3].horse_id in group:
 													for h in group:
-														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[0].horse[h-1].position[1]][controller.player[0].horse[h-1].position[0]])
 										else:
-											sprite_mover[0][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
-										on_selector = False
+											sprite_mover[0][3].update(POS_SPRITE_HORSE[controller.player[0].horse[3].position[1]][controller.player[0].horse[3].position[0]])
 										push = True
-							# 1P (2,2)
-							elif 75 <= mouse_x and mouse_x <= 123 and 225 <= mouse_y and mouse_y <= 271 and controller.num_of_horse >= 5:
-								if not controller.player[controller.turn-1].horse[4].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[4])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[4].horse_id in group:
-													for h in group:
-														sprite_horse[0][h-1].switch('goal')
-														sprite_mover[0][h-1].ret_wait()
-														controller.player[0].goal += 1
-														controller.player[0].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+
+							elif 75 <= mouse_x and mouse_x <= 124 and 226 <= mouse_y and mouse_y <= 270 and controller.num_of_horse >= 5:
+								if not controller.player[controller.turn-1].horse[4].goal:
+									ret = controller.game.move(controller, controller.player[0], controller.player[0].horse[4])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[0].horse[4].goal:
+												pass
+											else:
+												for group in controller.player[0].group:
+													if controller.player[0].horse[4].horse_id in group:
+														for h in group:
+															sprite_horse[0][h-1].switch('goal')
+															sprite_mover[0][h-1].ret_wait()
+															controller.player[0].goal += 1
+															controller.player[0].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[0].horse[4].goal:
 												pass
@@ -580,46 +622,58 @@ class View:
 												controller.player[0].goal += 1
 												controller.player[0].horse[4].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[0][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[0][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[4].horse_id in group:
+											for group in controller.player[0].group:
+												if controller.player[0].horse[4].horse_id in group:
 													for h in group:
-														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[0][h-1].update(POS_SPRITE_HORSE[controller.player[0].horse[h-1].position[1]][controller.player[0].horse[h-1].position[0]])
 										else:
-											sprite_mover[0][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
-										on_selector = False
+											sprite_mover[0][4].update(POS_SPRITE_HORSE[controller.player[0].horse[4].position[1]][controller.player[0].horse[4].position[0]])
 										push = True
 
-							if push and not controller.player[controller.turn-1].throwable:
+									on_selector = False
+
+							if push and not controller.player[0].throwable:
 								controller.next_turn()
 
-						# 2P 말 이동
-						elif controller.turn == 2 and on_selector:
+						######
+						# 2P
+						######
+						if controller.turn == 2 and on_selector:
 							push = False
-							# 2P (1,1)
-							if 713 <= mouse_x and mouse_x <= 761 and 167 <= mouse_y and mouse_y <= 213:
-								if not controller.player[controller.turn-1].horse[0].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[0])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[0].horse_id in group:
-													for h in group:
-														sprite_horse[1][h-1].switch('goal')
-														sprite_mover[1][h-1].ret_wait()
-														controller.player[1].goal += 1
-														controller.player[1].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+							if 713 <= mouse_x and mouse_x <= 761 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 1:
+								if not controller.player[controller.turn-1].horse[0].goal:
+									ret = controller.game.move(controller, controller.player[1], controller.player[1].horse[0])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[1].horse[0].goal:
+												pass
+											else:
+												for group in controller.player[1].group:
+													if controller.player[1].horse[0].horse_id in group:
+														for h in group:
+															sprite_horse[1][h-1].switch('goal')
+															sprite_mover[1][h-1].ret_wait()
+															controller.player[1].goal += 1
+															controller.player[1].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[1].horse[0].goal:
 												pass
@@ -629,52 +683,49 @@ class View:
 												controller.player[1].goal += 1
 												controller.player[1].horse[0].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
-									# 잡기
 									elif 'catch' in ret:
-										sound_catch[random.randint(0,3)].play()
-										# 모든 말 좌표 전부 갱신
-										for i in range(0, controller.num_of_player):
-											for j in range(0, controller.num_of_horse):
-												print('모든 말 포지션 : ', controller.player[i-1].horse[j-1].position)
-												if controller.player[i-1].horse[j-1].position == (6,7):
-													sprite_mover[i-1][j-1].update((-100,-100))
-											
-										controller.player[controller.turn-1].throwable = True
-										on_selector = False
-										push = True
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[1][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[1][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[0].horse_id in group:
+											for group in controller.player[1].group:
+												if controller.player[1].horse[0].horse_id in group:
 													for h in group:
-														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[1].horse[h-1].position[1]][controller.player[1].horse[h-1].position[0]])
 										else:
 											sprite_mover[1][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
-										on_selector = False
 										push = True
-							# 2P (1,2)
-							elif 773 <= mouse_x and mouse_x <= 822 and 167 <= mouse_y and mouse_y <= 213:
-								if not controller.player[controller.turn-1].horse[1].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[1])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[1].horse_id in group:
-													for h in group:
-														sprite_horse[1][h-1].switch('goal')
-														sprite_mover[1][h-1].ret_wait()
-														controller.player[1].goal += 1
-														controller.player[1].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+									
+							elif 774 <= mouse_x and mouse_x <= 821 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 2:
+								if not controller.player[controller.turn-1].horse[1].goal:
+									ret = controller.game.move(controller, controller.player[1], controller.player[1].horse[1])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[1].horse[1].goal:
+												pass
+											else:
+												for group in controller.player[1].group:
+													if controller.player[1].horse[1].horse_id in group:
+														for h in group:
+															sprite_horse[1][h-1].switch('goal')
+															sprite_mover[1][h-1].ret_wait()
+															controller.player[1].goal += 1
+															controller.player[1].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[1].horse[1].goal:
 												pass
@@ -684,39 +735,50 @@ class View:
 												controller.player[1].goal += 1
 												controller.player[1].horse[1].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[1][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[1][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[1].horse_id in group:
+											for group in controller.player[1].group:
+												if controller.player[1].horse[1].horse_id in group:
 													for h in group:
-														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[1].horse[h-1].position[1]][controller.player[1].horse[h-1].position[0]])
 										else:
-											sprite_mover[1][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
-										on_selector = False
+											sprite_mover[1][1].update(POS_SPRITE_HORSE[controller.player[1].horse[1].position[1]][controller.player[1].horse[1].position[0]])
 										push = True
-							# 2P (1,3)
-							elif 830 <= mouse_x and mouse_x <= 879 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 3:
-								if not controller.player[controller.turn-1].horse[2].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[2])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[2].horse_id in group:
-													for h in group:
-														sprite_horse[1][h-1].switch('goal')
-														sprite_mover[1][h-1].ret_wait()
-														controller.player[1].goal += 1
-														controller.player[1].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+
+									on_selector = False
+									
+							elif 832 <= mouse_x and mouse_x <= 879 and 167 <= mouse_y and mouse_y <= 213 and controller.num_of_horse >= 3:
+								if not controller.player[controller.turn-1].horse[2].goal:
+									ret = controller.game.move(controller, controller.player[1], controller.player[1].horse[2])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[1].horse[2].goal:
+												pass
+											else:
+												for group in controller.player[1].group:
+													if controller.player[1].horse[2].horse_id in group:
+														for h in group:
+															sprite_horse[1][h-1].switch('goal')
+															sprite_mover[1][h-1].ret_wait()
+															controller.player[1].goal += 1
+															controller.player[1].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[1].horse[2].goal:
 												pass
@@ -726,39 +788,49 @@ class View:
 												controller.player[1].goal += 1
 												controller.player[1].horse[2].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[1][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[1][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[2].horse_id in group:
+											for group in controller.player[1].group:
+												if controller.player[1].horse[2].horse_id in group:
 													for h in group:
-														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[1].horse[h-1].position[1]][controller.player[1].horse[h-1].position[0]])
 										else:
 											sprite_mover[1][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
-										on_selector = False
 										push = True
-							# 2P (2,1)
-							elif 714 <= mouse_x and mouse_x <= 762 and 225 <= mouse_y and mouse_y <= 271 and controller.num_of_horse >= 4:
-								if not controller.player[controller.turn-1].horse[3].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[3])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[3].horse_id in group:
-													for h in group:
-														sprite_horse[1][h-1].switch('goal')
-														sprite_mover[1][h-1].ret_wait()
-														controller.player[1].goal += 1
-														controller.player[1].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+
+							elif 711 <= mouse_x and mouse_x <= 762 and 226 <= mouse_y and mouse_y <= 270 and controller.num_of_horse >= 4:
+								if not controller.player[controller.turn-1].horse[3].goal:
+									ret = controller.game.move(controller, controller.player[1], controller.player[1].horse[3])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[1].horse[3].goal:
+												pass
+											else:
+												for group in controller.player[1].group:
+													if controller.player[1].horse[3].horse_id in group:
+														for h in group:
+															sprite_horse[1][h-1].switch('goal')
+															sprite_mover[1][h-1].ret_wait()
+															controller.player[1].goal += 1
+															controller.player[1].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[1].horse[3].goal:
 												pass
@@ -768,39 +840,49 @@ class View:
 												controller.player[1].goal += 1
 												controller.player[1].horse[3].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[1][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[1][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[3].horse_id in group:
+											for group in controller.player[1].group:
+												if controller.player[1].horse[3].horse_id in group:
 													for h in group:
-														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[1].horse[h-1].position[1]][controller.player[1].horse[h-1].position[0]])
 										else:
-											sprite_mover[1][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
-										on_selector = False
+											sprite_mover[1][3].update(POS_SPRITE_HORSE[controller.player[1].horse[3].position[1]][controller.player[1].horse[3].position[0]])
 										push = True
-							# 2P (2,2)
-							elif 773 <= mouse_x and mouse_x <= 819 and 225 <= mouse_y and mouse_y <= 271 and controller.num_of_horse >= 5:
-								if not controller.player[controller.turn-1].horse[4].goal:
-									ret = controller.game.move(controller, controller.player[controller.turn-1], controller.player[controller.turn-1].horse[4])
-									if 'goal' in ret:
-										# 그룹 완벽
-										if 'group' in ret:
-											# 그룹 체크해서 전부 골인시킴
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[4].horse_id in group:
-													for h in group:
-														sprite_horse[1][h-1].switch('goal')
-														sprite_mover[1][h-1].ret_wait()
-														controller.player[1].goal += 1
-														controller.player[1].horse[h-1].goal = True
-													sound_goal[random.randint(0,4)].play()
-													group[:] = []
 
-										# 비그룹 완벽
+									on_selector = False
+
+							elif 773 <= mouse_x and mouse_x <= 821 and 226 <= mouse_y and mouse_y <= 270 and controller.num_of_horse >= 5:
+								if not controller.player[controller.turn-1].horse[4].goal:
+									ret = controller.game.move(controller, controller.player[1], controller.player[1].horse[4])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[1].horse[4].goal:
+												pass
+											else:
+												for group in controller.player[1].group:
+													if controller.player[1].horse[4].horse_id in group:
+														for h in group:
+															sprite_horse[1][h-1].switch('goal')
+															sprite_mover[1][h-1].ret_wait()
+															controller.player[1].goal += 1
+															controller.player[1].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
 										else:
 											if controller.player[1].horse[4].goal:
 												pass
@@ -810,31 +892,584 @@ class View:
 												controller.player[1].goal += 1
 												controller.player[1].horse[4].goal = True
 												sound_goal[random.randint(0,4)].play()
-										on_selector = False
 										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[1][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[1][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
 									else:
-										# 그룹 완벽
 										if 'group' in ret:
-											for group in controller.player[controller.turn-1].group:
-												if controller.player[controller.turn-1].horse[4].horse_id in group:
+											for group in controller.player[1].group:
+												if controller.player[1].horse[4].horse_id in group:
 													for h in group:
-														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[h-1].position[1]][controller.player[controller.turn-1].horse[h-1].position[0]])
-										# 비그룹 완벽
+														sprite_mover[1][h-1].update(POS_SPRITE_HORSE[controller.player[1].horse[h-1].position[1]][controller.player[1].horse[h-1].position[0]])
 										else:
-											sprite_mover[1][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
-										on_selector = False
+											sprite_mover[1][4].update(POS_SPRITE_HORSE[controller.player[1].horse[4].position[1]][controller.player[1].horse[4].position[0]])
 										push = True
 
-							if push and not controller.player[controller.turn-1].throwable:
+									on_selector = False
+
+							if push and not controller.player[1].throwable:
+								controller.next_turn()
+					
+						######
+						# 3P
+						######
+						if controller.turn == 3 and on_selector:
+							push = False
+
+							if 15 <= mouse_x and mouse_x <= 63 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 1:
+								if not controller.player[controller.turn-1].horse[0].goal:
+									ret = controller.game.move(controller, controller.player[2], controller.player[2].horse[0])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[2].horse[0].goal:
+												pass
+											else:
+												for group in controller.player[2].group:
+													if controller.player[2].horse[0].horse_id in group:
+														for h in group:
+															sprite_horse[3][h-1].switch('goal')
+															sprite_mover[2][h-1].ret_wait()
+															controller.player[2].goal += 1
+															controller.player[2].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[2].horse[0].goal:
+												pass
+											else:
+												sprite_horse[2][0].switch('goal')
+												sprite_mover[2][0].ret_wait()
+												controller.player[2].goal += 1
+												controller.player[2].horse[0].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[2][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[2][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[2].group:
+												if controller.player[2].horse[0].horse_id in group:
+													for h in group:
+														sprite_mover[2][h-1].update(POS_SPRITE_HORSE[controller.player[2].horse[h-1].position[1]][controller.player[2].horse[h-1].position[0]])
+										else:
+											sprite_mover[2][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										push = True
+
+									on_selector = False
+									
+							elif 73 <= mouse_x and mouse_x <= 122 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 2:
+								if not controller.player[controller.turn-1].horse[1].goal:
+									ret = controller.game.move(controller, controller.player[2], controller.player[2].horse[1])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[2].horse[1].goal:
+												pass
+											else:
+												for group in controller.player[2].group:
+													if controller.player[2].horse[1].horse_id in group:
+														for h in group:
+															sprite_horse[2][h-1].switch('goal')
+															sprite_mover[2][h-1].ret_wait()
+															controller.player[2].goal += 1
+															controller.player[2].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[2].horse[1].goal:
+												pass
+											else:
+												sprite_horse[2][1].switch('goal')
+												sprite_mover[2][1].ret_wait()
+												controller.player[2].goal += 1
+												controller.player[2].horse[1].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[2][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[2][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[2].group:
+												if controller.player[2].horse[1].horse_id in group:
+													for h in group:
+														sprite_mover[2][h-1].update(POS_SPRITE_HORSE[controller.player[2].horse[h-1].position[1]][controller.player[2].horse[h-1].position[0]])
+										else:
+											sprite_mover[2][1].update(POS_SPRITE_HORSE[controller.player[2].horse[1].position[1]][controller.player[2].horse[1].position[0]])
+										push = True
+
+
+									on_selector = False
+									
+							elif 133 <= mouse_x and mouse_x <= 445 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 3:
+								if not controller.player[controller.turn-1].horse[2].goal:
+									ret = controller.game.move(controller, controller.player[2], controller.player[2].horse[2])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[2].horse[2].goal:
+												pass
+											else:
+												for group in controller.player[2].group:
+													if controller.player[2].horse[2].horse_id in group:
+														for h in group:
+															sprite_horse[2][h-1].switch('goal')
+															sprite_mover[2][h-1].ret_wait()
+															controller.player[2].goal += 1
+															controller.player[2].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[2].horse[2].goal:
+												pass
+											else:
+												sprite_horse[2][2].switch('goal')
+												sprite_mover[2][2].ret_wait()
+												controller.player[2].goal += 1
+												controller.player[2].horse[2].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[2][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[2][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[2].group:
+												if controller.player[2].horse[2].horse_id in group:
+													for h in group:
+														sprite_mover[2][h-1].update(POS_SPRITE_HORSE[controller.player[2].horse[h-1].position[1]][controller.player[2].horse[h-1].position[0]])
+										else:
+											sprite_mover[2][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										push = True
+
+									on_selector = False
+
+							elif 14 <= mouse_x and mouse_x <= 63 and 504 <= mouse_y and mouse_y <= 550 and controller.num_of_horse >= 4:
+								if not controller.player[controller.turn-1].horse[3].goal:
+									ret = controller.game.move(controller, controller.player[2], controller.player[2].horse[3])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[2].horse[3].goal:
+												pass
+											else:
+												for group in controller.player[2].group:
+													if controller.player[2].horse[3].horse_id in group:
+														for h in group:
+															sprite_horse[2][h-1].switch('goal')
+															sprite_mover[2][h-1].ret_wait()
+															controller.player[2].goal += 1
+															controller.player[2].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[2].horse[3].goal:
+												pass
+											else:
+												sprite_horse[2][3].switch('goal')
+												sprite_mover[2][3].ret_wait()
+												controller.player[2].goal += 1
+												controller.player[2].horse[3].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[2][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[2][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[2].group:
+												if controller.player[2].horse[3].horse_id in group:
+													for h in group:
+														sprite_mover[2][h-1].update(POS_SPRITE_HORSE[controller.player[2].horse[h-1].position[1]][controller.player[2].horse[h-1].position[0]])
+										else:
+											sprite_mover[2][3].update(POS_SPRITE_HORSE[controller.player[2].horse[3].position[1]][controller.player[2].horse[3].position[0]])
+										push = True
+
+									on_selector = False
+
+							elif 74 <= mouse_x and mouse_x <= 122 and 504 <= mouse_y and mouse_y <= 551 and controller.num_of_horse >= 5:
+								if not controller.player[controller.turn-1].horse[4].goal:
+									ret = controller.game.move(controller, controller.player[2], controller.player[2].horse[4])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[2].horse[4].goal:
+												pass
+											else:
+												for group in controller.player[2].group:
+													if controller.player[2].horse[4].horse_id in group:
+														for h in group:
+															sprite_horse[2][h-1].switch('goal')
+															sprite_mover[2][h-1].ret_wait()
+															controller.player[2].goal += 1
+															controller.player[2].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[2].horse[4].goal:
+												pass
+											else:
+												sprite_horse[2][4].switch('goal')
+												sprite_mover[2][4].ret_wait()
+												controller.player[2].goal += 1
+												controller.player[2].horse[4].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[2][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[2][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[2].group:
+												if controller.player[2].horse[4].horse_id in group:
+													for h in group:
+														sprite_mover[2][h-1].update(POS_SPRITE_HORSE[controller.player[2].horse[h-1].position[1]][controller.player[2].horse[h-1].position[0]])
+										else:
+											sprite_mover[2][4].update(POS_SPRITE_HORSE[controller.player[2].horse[4].position[1]][controller.player[2].horse[4].position[0]])
+										push = True
+
+									on_selector = False
+
+							if push and not controller.player[2].throwable:
+								controller.next_turn()
+
+						######
+						# 4P
+						######
+						if controller.turn == 4 and on_selector:
+							push = False
+
+							if 714 <= mouse_x and mouse_x <= 762 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 1:
+								if not controller.player[controller.turn-1].horse[0].goal:
+									ret = controller.game.move(controller, controller.player[3], controller.player[3].horse[0])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[3].horse[0].goal:
+												pass
+											else:
+												for group in controller.player[3].group:
+													if controller.player[3].horse[0].horse_id in group:
+														for h in group:
+															sprite_horse[2][h-1].switch('goal')
+															sprite_mover[3][h-1].ret_wait()
+															controller.player[3].goal += 1
+															controller.player[3].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[3].horse[0].goal:
+												pass
+											else:
+												sprite_horse[3][0].switch('goal')
+												sprite_mover[3][0].ret_wait()
+												controller.player[3].goal += 1
+												controller.player[3].horse[0].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[3][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[3][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[3].group:
+												if controller.player[3].horse[0].horse_id in group:
+													for h in group:
+														sprite_mover[3][h-1].update(POS_SPRITE_HORSE[controller.player[3].horse[h-1].position[1]][controller.player[3].horse[h-1].position[0]])
+										else:
+											sprite_mover[3][0].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[0].position[1]][controller.player[controller.turn-1].horse[0].position[0]])
+										push = True
+
+									on_selector = False
+									
+							elif 773 <= mouse_x and mouse_x <= 820 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 2:
+								if not controller.player[controller.turn-1].horse[1].goal:
+									ret = controller.game.move(controller, controller.player[3], controller.player[3].horse[1])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[3].horse[1].goal:
+												pass
+											else:
+												for group in controller.player[3].group:
+													if controller.player[3].horse[1].horse_id in group:
+														for h in group:
+															sprite_horse[3][h-1].switch('goal')
+															sprite_mover[3][h-1].ret_wait()
+															controller.player[3].goal += 1
+															controller.player[3].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[3].horse[1].goal:
+												pass
+											else:
+												sprite_horse[3][1].switch('goal')
+												sprite_mover[3][1].ret_wait()
+												controller.player[3].goal += 1
+												controller.player[3].horse[1].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[3][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[3][1].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[1].position[1]][controller.player[controller.turn-1].horse[1].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[3].group:
+												if controller.player[3].horse[1].horse_id in group:
+													for h in group:
+														sprite_mover[3][h-1].update(POS_SPRITE_HORSE[controller.player[3].horse[h-1].position[1]][controller.player[3].horse[h-1].position[0]])
+										else:
+											sprite_mover[3][1].update(POS_SPRITE_HORSE[controller.player[3].horse[1].position[1]][controller.player[3].horse[1].position[0]])
+										push = True
+
+
+									on_selector = False
+									
+							elif 832 <= mouse_x and mouse_x <= 879 and 444 <= mouse_y and mouse_y <= 491 and controller.num_of_horse >= 3:
+								if not controller.player[controller.turn-1].horse[2].goal:
+									ret = controller.game.move(controller, controller.player[3], controller.player[3].horse[2])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[3].horse[2].goal:
+												pass
+											else:
+												for group in controller.player[3].group:
+													if controller.player[3].horse[2].horse_id in group:
+														for h in group:
+															sprite_horse[3][h-1].switch('goal')
+															sprite_mover[3][h-1].ret_wait()
+															controller.player[3].goal += 1
+															controller.player[3].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[3].horse[2].goal:
+												pass
+											else:
+												sprite_horse[3][2].switch('goal')
+												sprite_mover[3][2].ret_wait()
+												controller.player[3].goal += 1
+												controller.player[3].horse[2].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[3][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[3][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[3].group:
+												if controller.player[3].horse[2].horse_id in group:
+													for h in group:
+														sprite_mover[3][h-1].update(POS_SPRITE_HORSE[controller.player[3].horse[h-1].position[1]][controller.player[3].horse[h-1].position[0]])
+										else:
+											sprite_mover[3][2].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[2].position[1]][controller.player[controller.turn-1].horse[2].position[0]])
+										push = True
+
+									on_selector = False
+
+							elif 714 <= mouse_x and mouse_x <= 762 and 504 <= mouse_y and mouse_y <= 550 and controller.num_of_horse >= 4:
+								if not controller.player[controller.turn-1].horse[3].goal:
+									ret = controller.game.move(controller, controller.player[3], controller.player[3].horse[3])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[3].horse[3].goal:
+												pass
+											else:
+												for group in controller.player[3].group:
+													if controller.player[3].horse[3].horse_id in group:
+														for h in group:
+															sprite_horse[3][h-1].switch('goal')
+															sprite_mover[3][h-1].ret_wait()
+															controller.player[3].goal += 1
+															controller.player[3].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[3].horse[3].goal:
+												pass
+											else:
+												sprite_horse[3][3].switch('goal')
+												sprite_mover[3][3].ret_wait()
+												controller.player[3].goal += 1
+												controller.player[3].horse[3].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[3][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[3][3].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[3].position[1]][controller.player[controller.turn-1].horse[3].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[3].group:
+												if controller.player[3].horse[3].horse_id in group:
+													for h in group:
+														sprite_mover[3][h-1].update(POS_SPRITE_HORSE[controller.player[3].horse[h-1].position[1]][controller.player[3].horse[h-1].position[0]])
+										else:
+											sprite_mover[3][3].update(POS_SPRITE_HORSE[controller.player[3].horse[3].position[1]][controller.player[3].horse[3].position[0]])
+										push = True
+
+									on_selector = False
+
+							elif 771 <= mouse_x and mouse_x <= 821 and 504 <= mouse_y and mouse_y <= 551 and controller.num_of_horse >= 5:
+								if not controller.player[controller.turn-1].horse[4].goal:
+									ret = controller.game.move(controller, controller.player[3], controller.player[3].horse[4])
+
+									if 'goal' in ret:
+										if 'group' in ret:
+											if controller.player[3].horse[4].goal:
+												pass
+											else:
+												for group in controller.player[3].group:
+													if controller.player[3].horse[4].horse_id in group:
+														for h in group:
+															sprite_horse[3][h-1].switch('goal')
+															sprite_mover[3][h-1].ret_wait()
+															controller.player[3].goal += 1
+															controller.player[3].horse[h-1].goal = True
+														sound_goal[random.randint(0,4)].play()
+										else:
+											if controller.player[3].horse[4].goal:
+												pass
+											else:
+												sprite_horse[3][4].switch('goal')
+												sprite_mover[3][4].ret_wait()
+												controller.player[3].goal += 1
+												controller.player[3].horse[4].goal = True
+												sound_goal[random.randint(0,4)].play()
+										push = True
+									elif 'catch' in ret:
+										# 말을 잡았으니 위치 갱신
+										sprite_mover[ret[0]-1][ret[1]-1].update((-100,-100))
+										sprite_mover[3][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									elif 'groupcatch' in ret:
+										# 말을 잡았으니 위치 갱신
+										for h_index in ret[3]:
+											sprite_mover[ret[0]-1][h_index-1].update((-100,-100))
+										sprite_mover[3][4].update(POS_SPRITE_HORSE[controller.player[controller.turn-1].horse[4].position[1]][controller.player[controller.turn-1].horse[4].position[0]])
+										sound_catch[random.randint(0,2)].play()
+										push = False
+									else:
+										if 'group' in ret:
+											for group in controller.player[3].group:
+												if controller.player[3].horse[4].horse_id in group:
+													for h in group:
+														sprite_mover[3][h-1].update(POS_SPRITE_HORSE[controller.player[3].horse[h-1].position[1]][controller.player[3].horse[h-1].position[0]])
+										else:
+											sprite_mover[3][4].update(POS_SPRITE_HORSE[controller.player[3].horse[4].position[1]][controller.player[3].horse[4].position[0]])
+										push = True
+
+									on_selector = False
+
+							if push and not controller.player[3].throwable:
 								controller.next_turn()
 
 						
-			# 게임 오버
-			if controller.player[controller.turn-1].goal == (controller.num_of_horse) and not is_gameover:
-				pygame.mixer.music.stop()
-				sound_win.play()
-				sprite_gameover_g.draw(self.window)
-				is_gameover = True
+			# 게임 오버 (한 명이라도 말을 전부 골인시켰을 경우)
+			for player in range(0, controller.num_of_player):
+
+				if controller.player[player].goal == (controller.num_of_horse) and not is_gameover:
+					pygame.mixer.music.stop()
+					sound_win.play()
+					sprite_gameover_g.draw(self.window)
+					is_gameover = True
 
 			# 윷 던지기 애니메이션
 			if throw_push:
